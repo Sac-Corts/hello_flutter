@@ -1,35 +1,61 @@
 import 'package:flutter/material.dart';
 
 void main() {
-  runApp(const MyApp());
+  runApp(MyApp());
 }
 
 class MyApp extends StatelessWidget {
-  const MyApp({super.key});
-
   @override
   Widget build(BuildContext context) {
     return MaterialApp(
-      title: 'Welcome to Flutter',
-      theme: ThemeData(
-        colorScheme: ColorScheme.fromSeed(seedColor: Colors.deepPurple),
-      ),
-      home: const MyHomePage(title: 'Welcome to Flutter'),
-    );
-  }
-}
+      home: Scaffold(
+        appBar: AppBar(title: Text('Widgets Básicos')),
+        body: Center(
+          child: Column(
+            mainAxisAlignment: MainAxisAlignment.center,
+            children: [
+              // Widget Text
+              Text(
+                'Hola, Flutter!',
+                style: TextStyle(fontSize: 24, fontWeight: FontWeight.bold),
+              ),
+              SizedBox(height: 20), // Espaciado entre widgets
+              // Widget Row
+              Row(
+                mainAxisAlignment: MainAxisAlignment.spaceEvenly,
+                children: [
+                  Icon(Icons.star, color: Colors.blue),
+                  Icon(Icons.favorite, color: Colors.red),
+                  Icon(Icons.thumb_up, color: Colors.green),
+                ],
+              ),
+              SizedBox(height: 20),
 
-class MyHomePage extends StatelessWidget {
-  const MyHomePage({super.key, required this.title});
+              // Widget Stack
+              Stack(
+                alignment: Alignment.center,
+                children: [
+                  Container(width: 100, height: 100, color: Colors.blue),
+                  Text(
+                    'Stack',
+                    style: TextStyle(color: Colors.white, fontSize: 18),
+                  ),
+                ],
+              ),
+              SizedBox(height: 20),
 
-  final String title;
-
-  @override
-  Widget build(BuildContext context) {
-    return Scaffold(
-      appBar: AppBar(title: Text(title)),
-      body: Center(
-        child: const Text('Hello World', style: TextStyle(fontSize: 24)),
+              // Widget Container
+              Container(
+                padding: EdgeInsets.all(16),
+                decoration: BoxDecoration(
+                  color: Colors.amber,
+                  borderRadius: BorderRadius.circular(8),
+                ),
+                child: Text('Soy un Container', style: TextStyle(fontSize: 18)),
+              ),
+            ],
+          ),
+        ),
       ),
     );
   }
