@@ -9,52 +9,44 @@ class MyApp extends StatelessWidget {
   Widget build(BuildContext context) {
     return MaterialApp(
       home: Scaffold(
-        appBar: AppBar(title: Text('Widgets Básicos')),
-        body: Center(
-          child: Column(
-            mainAxisAlignment: MainAxisAlignment.center,
-            children: [
-              // Widget Text
-              Text(
-                'Hola, Flutter!',
-                style: TextStyle(fontSize: 24, fontWeight: FontWeight.bold),
+        body: Stack(
+          children: [
+            // Imagen de fondo
+            Container(
+              decoration: BoxDecoration(
+                image: DecorationImage(
+                  image: AssetImage(
+                    'assets/background.jpg',
+                  ), // Asegúrate de agregar esta imagen en la carpeta assets
+                  fit: BoxFit.cover,
+                ),
               ),
-              SizedBox(height: 20), // Espaciado entre widgets
-              // Widget Row
-              Row(
-                mainAxisAlignment: MainAxisAlignment.spaceEvenly,
+            ),
+            // Contenido principal
+            Center(
+              child: Column(
+                mainAxisAlignment: MainAxisAlignment.center,
                 children: [
-                  Icon(Icons.star, color: Colors.blue),
-                  Icon(Icons.favorite, color: Colors.red),
-                  Icon(Icons.thumb_up, color: Colors.green),
-                ],
-              ),
-              SizedBox(height: 20),
-
-              // Widget Stack
-              Stack(
-                alignment: Alignment.center,
-                children: [
-                  Container(width: 100, height: 100, color: Colors.blue),
+                  // Nombre de la aplicación
                   Text(
-                    'Stack',
-                    style: TextStyle(color: Colors.white, fontSize: 18),
+                    'Catalogo de Películas',
+                    style: TextStyle(
+                      fontSize: 32,
+                      fontWeight: FontWeight.bold,
+                      color: Colors.white,
+                    ),
+                  ),
+                  SizedBox(height: 20),
+                  // Mensaje de bienvenida
+                  Text(
+                    '¡Bienvenido a nuestro catálogo de películas!',
+                    textAlign: TextAlign.center,
+                    style: TextStyle(fontSize: 18, color: Colors.white),
                   ),
                 ],
               ),
-              SizedBox(height: 20),
-
-              // Widget Container
-              Container(
-                padding: EdgeInsets.all(16),
-                decoration: BoxDecoration(
-                  color: Colors.amber,
-                  borderRadius: BorderRadius.circular(8),
-                ),
-                child: Text('Soy un Container', style: TextStyle(fontSize: 18)),
-              ),
-            ],
-          ),
+            ),
+          ],
         ),
       ),
     );
