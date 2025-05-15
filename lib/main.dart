@@ -1,107 +1,294 @@
-import 'package:firebase_core/firebase_core.dart';
 import 'package:flutter/material.dart';
-import 'package:hello_flutter/firebase_options.dart';
-import 'package:http/http.dart' as http;
-import 'dart:convert';
 
-Future<void> main() async {
-  WidgetsFlutterBinding.ensureInitialized();
-  await Firebase.initializeApp(options: DefaultFirebaseOptions.currentPlatform);
-  runApp(MyApp());
-}
+void main() => runApp(PeliculasApp());
 
-class MyApp extends StatelessWidget {
+class PeliculasApp extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
-    return MaterialApp(home: PokemonScreen());
+    return MaterialApp(
+      title: 'Catálogo de Películas',
+      initialRoute: '/',
+      routes: {
+        '/': (context) => HomeScreen(),
+        '/login': (context) => LoginScreen(),
+        '/catalogo': (context) => CatalogoScreen(),
+        '/detalle': (context) => DetalleScreen(),
+        '/admin': (context) => AdminScreen(),
+      },
+    );
   }
 }
 
-class PokemonScreen extends StatefulWidget {
-  @override
-  _PokemonScreenState createState() => _PokemonScreenState();
+// Datos simulados
+class Pelicula {
+  final String titulo;
+  final String anio;
+  final String director;
+  final String genero;
+  final String sinopsis;
+  final String imagenUrl;
+
+  Pelicula(
+    this.titulo,
+    this.anio,
+    this.director,
+    this.genero,
+    this.sinopsis,
+    this.imagenUrl,
+  );
 }
 
-class _PokemonScreenState extends State<PokemonScreen> {
-  String? pokemonName;
-  String? pokemonImage;
-  bool isLoading = false;
+List<Pelicula> peliculas = [
+  Pelicula(
+    'Thunderbolts',
+    '2025',
+    'Jake Schreier',
+    'Acción',
+    'Un grupo de antihéroes es reunido por el gobierno para llevar a cabo misiones encubiertas.',
+    'https://m.media-amazon.com/images/M/MV5BNDIzNGUwZmYtODM0Yy00NjA3LTgxOGUtOTY0ZGM5MjBkM2I3XkEyXkFqcGc@._V1_.jpg',
+  ),
+  Pelicula(
+    'Minecraft: La Película',
+    '2025',
+    'Jared Hess',
+    'Aventura',
+    'Una adolescente y su grupo de aventureros deben salvar su mundo de un Ender Dragon.',
+    'https://m.media-amazon.com/images/S/pv-target-images/624fd859d0ee60c1dcfe59cdc4f2bb6ecbb5f27f29314a9581d43095f6240ca8.jpg',
+  ),
+  Pelicula(
+    'Destino Final: Lazos de Sangre',
+    '2025',
+    'Zach Lipovsky & Adam B. Stein',
+    'Terror',
+    'Una nueva entrega de la franquicia donde la muerte persigue a un grupo de sobrevivientes.',
+    'https://m.media-amazon.com/images/M/MV5BMTlmNDRiZjgtNmYxNi00NTc3LWFlNzEtNzE0ZGQ1ODdlMDQ5XkEyXkFqcGc@._V1_.jpg',
+  ),
+];
 
-  Future<void> fetchPokemonData() async {
+// Pantalla de Inicio
+class HomeScreen extends StatelessWidget {
+  @override
+  Widget build(BuildContext context) {
+    return Scaffold(
+      appBar: AppBar(title: Text('Bienvenido')),
+      body: Center(
+        child: Column(
+          mainAxisAlignment: MainAxisAlignment.center,
+          children: [
+            Text('Catálogo de Películas', style: TextStyle(fontSize: 24)),
+            ElevatedButton(
+              onPressed: () => Navigator.pushNamed(context, '/login'),
+              child: Text('Ingresar'),
+            ),
+          ],
+        ),
+      ),
+    );
+  }
+}
+
+// Pantalla Login (simulada)
+class LoginScreen extends StatelessWidget {
+  @override
+  Widget build(BuildContext context) {
+    return Scaffold(
+      appBar: AppBar(title: Text('Iniciar Sesión')),
+      body: Center(
+        child: ElevatedButton(
+          onPressed: () => Navigator.pushNamed(context, '/catalogo'),
+          child: Text('Entrar al Catálogo'),
+        ),
+      ),
+    );
+  }
+}
+
+// Pantalla de Catálogo
+class CatalogoScreen extends StatefulWidget {
+  @override
+  _CatalogoScreenState createState() => _CatalogoScreenState();
+}
+
+class _CatalogoScreenState extends State<CatalogoScreen> {
+  void eliminarPelicula(int index) {
     setState(() {
-      isLoading = true;
+      peliculas.removeAt(index);
     });
-
-    try {
-      final response = await http.get(
-        Uri.parse('https://pokeapi.co/api/v2/pokemon/charmander'),
-      );
-      if (response.statusCode == 200) {
-        final data = json.decode(response.body);
-        setState(() {
-          pokemonName = data['name'];
-          pokemonImage = data['sprites']['front_default'];
-        });
-      } else {
-        throw Exception('Failed to load Pokémon data');
-      }
-    } catch (e) {
-      print('Error: $e');
-    } finally {
-      setState(() {
-        isLoading = false;
-      });
-    }
-  }
-
-  @override
-  void initState() {
-    super.initState();
-    fetchPokemonData();
   }
 
   @override
   Widget build(BuildContext context) {
     return Scaffold(
-      appBar: AppBar(title: Text('Pokémon'), backgroundColor: Colors.red),
-      body: Stack(
-        children: [
-          // Imagen de fondo
-          Container(
-            decoration: BoxDecoration(
-              image: DecorationImage(
-                image: AssetImage('assets/background.jpg'),
+      appBar: AppBar(title: Text('Catálogo')),
+      body: ListView.builder(
+        itemCount: peliculas.length,
+        itemBuilder: (context, index) {
+          final pelicula = peliculas[index];
+          return Card(
+            margin: EdgeInsets.all(12),
+            elevation: 4,
+            child: Padding(
+              padding: const EdgeInsets.all(12.0),
+              child: Column(
+                crossAxisAlignment: CrossAxisAlignment.center,
+                children: [
+                  Center(
+                    child: Image.network(
+                      pelicula.imagenUrl,
+                      height: 300,
+                      fit: BoxFit.cover,
+                    ),
+                  ),
+                  SizedBox(height: 8),
+                  Text(
+                    pelicula.titulo,
+                    style: TextStyle(fontSize: 20, fontWeight: FontWeight.bold),
+                    textAlign: TextAlign.center,
+                  ),
+                  SizedBox(height: 8),
+                  Row(
+                    mainAxisAlignment: MainAxisAlignment.spaceEvenly,
+                    children: [
+                      ElevatedButton(
+                        onPressed:
+                            () => Navigator.pushNamed(
+                              context,
+                              '/detalle',
+                              arguments: pelicula,
+                            ),
+                        child: Text('Ver Detalles'),
+                      ),
+                      ElevatedButton(
+                        onPressed: () => eliminarPelicula(index),
+                        style: ElevatedButton.styleFrom(
+                          backgroundColor: Colors.red,
+                        ),
+                        child: Text('Eliminar'),
+                      ),
+                    ],
+                  ),
+                ],
+              ),
+            ),
+          );
+        },
+      ),
+      floatingActionButton: FloatingActionButton(
+        onPressed: () => Navigator.pushNamed(context, '/admin'),
+        child: Icon(Icons.admin_panel_settings),
+      ),
+    );
+  }
+}
+
+// Pantalla Detalle
+class DetalleScreen extends StatelessWidget {
+  @override
+  Widget build(BuildContext context) {
+    final Pelicula pelicula =
+        ModalRoute.of(context)!.settings.arguments as Pelicula;
+    return Scaffold(
+      appBar: AppBar(title: Text(pelicula.titulo)),
+      body: SingleChildScrollView(
+        padding: const EdgeInsets.all(16.0),
+        child: Column(
+          crossAxisAlignment: CrossAxisAlignment.start,
+          children: [
+            Center(
+              child: Image.network(
+                pelicula.imagenUrl,
+                height: 300,
                 fit: BoxFit.cover,
               ),
             ),
+            SizedBox(height: 16),
+            Text('Año: ${pelicula.anio}'),
+            Text('Director: ${pelicula.director}'),
+            Text('Género: ${pelicula.genero}'),
+            SizedBox(height: 8),
+            Text('Sinopsis:', style: TextStyle(fontWeight: FontWeight.bold)),
+            Text(pelicula.sinopsis),
+          ],
+        ),
+      ),
+    );
+  }
+}
+
+// Pantalla de Administración
+class AdminScreen extends StatefulWidget {
+  @override
+  _AdminScreenState createState() => _AdminScreenState();
+}
+
+class _AdminScreenState extends State<AdminScreen> {
+  final _formKey = GlobalKey<FormState>();
+  final tituloCtrl = TextEditingController();
+  final anioCtrl = TextEditingController();
+  final directorCtrl = TextEditingController();
+  final generoCtrl = TextEditingController();
+  final sinopsisCtrl = TextEditingController();
+  final imagenCtrl = TextEditingController();
+
+  @override
+  Widget build(BuildContext context) {
+    return Scaffold(
+      appBar: AppBar(title: Text('Administrar Películas')),
+      body: Padding(
+        padding: const EdgeInsets.all(16.0),
+        child: Form(
+          key: _formKey,
+          child: SingleChildScrollView(
+            child: Column(
+              children: [
+                TextFormField(
+                  controller: tituloCtrl,
+                  decoration: InputDecoration(labelText: 'Título'),
+                ),
+                TextFormField(
+                  controller: anioCtrl,
+                  decoration: InputDecoration(labelText: 'Año'),
+                ),
+                TextFormField(
+                  controller: directorCtrl,
+                  decoration: InputDecoration(labelText: 'Director'),
+                ),
+                TextFormField(
+                  controller: generoCtrl,
+                  decoration: InputDecoration(labelText: 'Género'),
+                ),
+                TextFormField(
+                  controller: sinopsisCtrl,
+                  decoration: InputDecoration(labelText: 'Sinopsis'),
+                ),
+                TextFormField(
+                  controller: imagenCtrl,
+                  decoration: InputDecoration(labelText: 'URL de Imagen'),
+                ),
+                SizedBox(height: 20),
+                ElevatedButton(
+                  onPressed: () {
+                    final nueva = Pelicula(
+                      tituloCtrl.text,
+                      anioCtrl.text,
+                      directorCtrl.text,
+                      generoCtrl.text,
+                      sinopsisCtrl.text,
+                      imagenCtrl.text,
+                    );
+                    setState(() {
+                      peliculas.add(nueva);
+                    });
+                    ScaffoldMessenger.of(context).showSnackBar(
+                      SnackBar(content: Text('Película agregada.')),
+                    );
+                  },
+                  child: Text('Agregar Película'),
+                ),
+              ],
+            ),
           ),
-          // Contenido principal
-          Center(
-            child:
-                isLoading
-                    ? CircularProgressIndicator()
-                    : pokemonName != null && pokemonImage != null
-                    ? Column(
-                      mainAxisAlignment: MainAxisAlignment.center,
-                      children: [
-                        Text(
-                          pokemonName!.toUpperCase(),
-                          style: TextStyle(
-                            fontSize: 32,
-                            fontWeight: FontWeight.bold,
-                            color: Colors.white,
-                          ),
-                        ),
-                        SizedBox(height: 20),
-                        Image.network(pokemonImage!, height: 200),
-                      ],
-                    )
-                    : Text(
-                      'Error al cargar datos del Pokémon',
-                      style: TextStyle(color: Colors.white),
-                    ),
-          ),
-        ],
+        ),
       ),
     );
   }
